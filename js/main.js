@@ -12,6 +12,7 @@ import * as protocol from './protocol.js';
 import { Schedule } from './schedule.js';
 import { lightState } from './state.js';
 import { KEYS, storage } from './storage.js';
+import { applyTranslations } from './i18n.js';
 import { isIos } from './util.js';
 import { $ } from './ui/dom.js';
 import { initBrightness } from './ui/slider.js';
@@ -37,6 +38,18 @@ const effectSpeed = initEffects({ chain, state: lightState, storage });
 initFavorites({ chain, state: lightState, storage, colors });
 initScheduleView({ schedule });
 
+/**
+ * Home-screen shortcut: `?action=on|off` switches the light as soon as the chain is connected.
+ * Only these two values are accepted; the parameter is removed from the address bar right away.
+ * @type {'on' | 'off' | null}
+ */
+let pendingAction = null;
+{
+  const action = new URLSearchParams(location.search).get('action');
+  if (action === 'on' || action === 'off') pendingAction = action;
+  if (location.search) history.replaceState(null, '', location.pathname);
+}
+
 /** Shows the last saved state in the UI. */
 function restoreControls() {
   power.restore();
@@ -54,6 +67,10 @@ chain.addEventListener('connectionchange', (event) => {
   if (connected) {
     restoreControls();
     schedule.sync();
+    if (pendingAction) {
+      power.setPower(pendingAction === 'on');
+      pendingAction = null;
+    }
   }
 });
 
@@ -77,6 +94,7 @@ setInterval(() => chain.isConnected && schedule.sync(), RESYNC_INTERVAL_MS);
 
 // ---------- Startup ----------
 
+applyTranslations();
 setConnectedUi(false);
 restoreControls();
 colors.restoreTab();

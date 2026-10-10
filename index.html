@@ -9,7 +9,11 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Lichter" />
-    <meta name="description" content="Steuerung für Bluetooth-Lichterketten mit ELK-BLEDOM / MELK Controller" />
+    <meta
+      name="description"
+      data-i18n-content="doc.description"
+      content="Control for Bluetooth light chains with an ELK-BLEDOM / MELK controller"
+    />
     <link rel="manifest" href="manifest.json" />
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
     <link rel="icon" href="icons/icon-192.png" />
@@ -18,43 +22,63 @@
   </head>
   <body>
     <h1>Lichterkette</h1>
-    <div class="status-line"><span id="dot" class="status-dot"></span><span id="status">Nicht verbunden</span></div>
+    <div class="status-line">
+      <span id="dot" class="status-dot"></span><span id="status" data-i18n="status.notConnected">Not connected</span>
+    </div>
 
     <div id="msg" class="banner"></div>
 
     <div class="hero">
-      <div class="orb" id="orb" role="button" tabindex="0" aria-label="Licht an- oder ausschalten">
+      <div
+        class="orb"
+        id="orb"
+        role="button"
+        tabindex="0"
+        data-i18n-aria="power.toggleAria"
+        aria-label="Switch the light on or off"
+      >
         <div class="core"></div>
       </div>
       <div class="side">
         <div class="seg" id="powerSeg">
-          <button id="off" type="button">Aus</button>
-          <button id="on" type="button" class="active">An</button>
+          <button id="off" type="button" data-i18n="power.off">Off</button>
+          <button id="on" type="button" class="active" data-i18n="power.on">On</button>
         </div>
-        <p class="hint">Kette einschalten, in die Nähe halten und auf „Verbinden“ tippen.</p>
-        <button id="connect" class="button">Verbinden</button>
-        <button id="connectAll" class="hint-link" type="button">Kette nicht in der Liste? Alle Geräte zeigen</button>
+        <p class="hint" data-i18n="hint.connect">Switch the chain on, hold your phone close and tap “Connect”.</p>
+        <button id="connect" class="button" data-i18n="button.connect">Connect</button>
+        <button id="connectAll" class="hint-link" type="button" data-i18n="button.showAll">
+          Chain not in the list? Show all devices
+        </button>
       </div>
     </div>
 
     <h2 class="section-title">
-      <span>Favoriten</span><button class="section-action" id="favEdit" type="button" hidden>Bearbeiten</button>
+      <span data-i18n="favorites.title">Favorites</span
+      ><button class="section-action" id="favEdit" type="button" hidden data-i18n="favorites.edit">Edit</button>
     </h2>
     <div class="card card-pad lock">
       <div class="favorites-row" id="favs">
-        <button class="fav add" id="favAdd" type="button" aria-label="Aktuelle Farbe als Favorit speichern">+</button>
+        <button
+          class="fav add"
+          id="favAdd"
+          type="button"
+          data-i18n-aria="favorites.addAria"
+          aria-label="Save the current color as a favorite"
+        >
+          +
+        </button>
       </div>
-      <p class="note" id="favHint">Tippe auf +, um die aktuelle Farbe zu speichern.</p>
+      <p class="note" id="favHint" data-i18n="favorites.hint">Tap + to save the current color.</p>
     </div>
 
-    <h2 class="section-title"><span>Farbe</span></h2>
+    <h2 class="section-title"><span data-i18n="color.title">Color</span></h2>
     <div class="card card-pad lock">
       <div class="seg small" id="tabs">
-        <button id="tabWhite" type="button">Weiß</button>
-        <button id="tabColor" type="button" class="active">Farbe</button>
+        <button id="tabWhite" type="button" data-i18n="color.tabWhite">White</button>
+        <button id="tabColor" type="button" class="active" data-i18n="color.tabColor">Color</button>
       </div>
       <div id="paneWhite" hidden>
-        <div class="reading"><b id="kval">2700 K</b><span id="kname">Warmweiß</span></div>
+        <div class="reading"><b id="kval">2700 K</b><span id="kname"></span></div>
         <input
           type="range"
           id="kelvin"
@@ -64,9 +88,10 @@
           step="50"
           value="2700"
           disabled
-          aria-label="Farbtemperatur"
+          data-i18n-aria="color.kelvinAria"
+          aria-label="Color temperature"
         />
-        <div class="scale-labels"><span>Warm</span><span>Kalt</span></div>
+        <div class="scale-labels"><span data-i18n="color.warm">Warm</span><span data-i18n="color.cold">Cool</span></div>
         <div class="chips" id="chips"></div>
       </div>
       <div id="paneColor">
@@ -78,17 +103,23 @@
           max="360"
           value="0"
           disabled
-          aria-label="Farbton"
+          data-i18n-aria="color.hueAria"
+          aria-label="Hue"
         />
         <div class="swatch-row" id="swatches">
-          <label class="swatch custom" id="customsw" aria-label="Eigene Farbe wählen">
+          <label
+            class="swatch custom"
+            id="customsw"
+            data-i18n-aria="color.customAria"
+            aria-label="Choose a custom color"
+          >
             <input type="color" id="color" value="#ff0000" disabled />
           </label>
         </div>
       </div>
     </div>
 
-    <h2 class="section-title">Helligkeit</h2>
+    <h2 class="section-title" data-i18n="brightness.title">Brightness</h2>
     <div class="slider-card lock">
       <input
         type="range"
@@ -98,7 +129,8 @@
         max="100"
         value="100"
         disabled
-        aria-label="Helligkeit"
+        data-i18n-aria="brightness.aria"
+        aria-label="Brightness"
       />
       <span class="ico"
         ><svg
@@ -119,46 +151,77 @@
       <span class="val" id="brightVal">100%</span>
     </div>
 
-    <h2 class="section-title"><span>Zeitplan</span></h2>
+    <h2 class="section-title"><span data-i18n="schedule.title">Schedule</span></h2>
     <div class="card lock">
       <div class="alarm" data-alarm="0">
         <label class="row">
-          <span class="alarm-title"><b>Licht an</b><small data-role="summary">Aus</small></span>
+          <span class="alarm-title"><b data-i18n="schedule.on">Light on</b><small data-role="summary"></small></span>
           <span class="switch"><input type="checkbox" data-role="enabled" /><i></i></span>
         </label>
         <div class="alarm-body" data-role="body" hidden>
           <div class="alarm-time" data-role="time"></div>
           <div class="alarm-offset">
-            <button type="button" data-role="earlier" aria-label="5 Minuten früher" disabled>−</button>
+            <button
+              type="button"
+              data-role="earlier"
+              data-i18n-aria="schedule.earlierAria"
+              aria-label="5 minutes earlier"
+              disabled
+            >
+              −
+            </button>
             <span data-role="offset"></span>
-            <button type="button" data-role="later" aria-label="5 Minuten später" disabled>+</button>
+            <button
+              type="button"
+              data-role="later"
+              data-i18n-aria="schedule.laterAria"
+              aria-label="5 minutes later"
+              disabled
+            >
+              +
+            </button>
           </div>
           <div class="days" data-role="days"></div>
         </div>
       </div>
       <div class="alarm" data-alarm="1">
         <label class="row">
-          <span class="alarm-title"><b>Licht aus</b><small data-role="summary">Aus</small></span>
+          <span class="alarm-title"><b data-i18n="schedule.off">Light off</b><small data-role="summary"></small></span>
           <span class="switch"><input type="checkbox" data-role="enabled" /><i></i></span>
         </label>
         <div class="alarm-body" data-role="body" hidden>
           <div class="alarm-time" data-role="time"></div>
           <div class="alarm-offset">
-            <button type="button" data-role="earlier" aria-label="5 Minuten früher" disabled>−</button>
+            <button
+              type="button"
+              data-role="earlier"
+              data-i18n-aria="schedule.earlierAria"
+              aria-label="5 minutes earlier"
+              disabled
+            >
+              −
+            </button>
             <span data-role="offset"></span>
-            <button type="button" data-role="later" aria-label="5 Minuten später" disabled>+</button>
+            <button
+              type="button"
+              data-role="later"
+              data-i18n-aria="schedule.laterAria"
+              aria-label="5 minutes later"
+              disabled
+            >
+              +
+            </button>
           </div>
           <div class="days" data-role="days"></div>
         </div>
       </div>
     </div>
-    <p class="footnote">
-      Der Zeitplan wird in der Kette gespeichert und läuft auch, wenn die App geschlossen ist. Die Kette meldet ihn
-      nicht zurück, angezeigt wird, was diese App zuletzt gesendet hat.
-    </p>
-    <button type="button" class="link-button" id="clockNow" disabled>Uhr der Kette jetzt stellen</button>
+    <p class="footnote" data-i18n="schedule.note"></p>
+    <button type="button" class="link-button" id="clockNow" disabled data-i18n="schedule.setClock">
+      Set the chain’s clock now
+    </button>
 
-    <h2 class="section-title">Mehr</h2>
+    <h2 class="section-title" data-i18n="more.title">More</h2>
     <details class="card lock" id="fx">
       <summary>
         <span class="tile"
@@ -166,7 +229,7 @@
             <path d="M12 2l1.9 5.6 5.6 1.9-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9z" />
             <path d="M19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9z" /></svg
         ></span>
-        <span class="grow">Effekte</span>
+        <span class="grow" data-i18n="effects.title">Effects</span>
         <span class="chev"
           ><svg
             width="9"
@@ -192,27 +255,24 @@
             max="100"
             value="50"
             disabled
-            aria-label="Geschwindigkeit"
+            data-i18n-aria="effects.speed"
+            aria-label="Speed"
           />
-          <span class="ico">Geschwindigkeit</span>
+          <span class="ico" data-i18n="effects.speed">Speed</span>
           <span class="val" id="speedVal">50%</span>
         </div>
-        <p class="note">
-          Die Zahlen entsprechen den eingebauten Effekten des Controllers. Eine Farbe zu wählen beendet den Effekt.
-        </p>
+        <p class="note" data-i18n="effects.note"></p>
       </div>
     </details>
 
-    <h2 class="section-title">Einstellungen</h2>
+    <h2 class="section-title" data-i18n="settings.title">Settings</h2>
     <div class="card">
       <label class="row">
-        <span>Automatisch verbinden</span>
+        <span data-i18n="settings.auto">Connect automatically</span>
         <span class="switch"><input type="checkbox" id="auto" checked /><i></i></span>
       </label>
     </div>
-    <p class="footnote">
-      Verbindet beim Öffnen mit der zuletzt genutzten Kette. Das klappt nur, solange die App geöffnet ist.
-    </p>
+    <p class="footnote" data-i18n="settings.autoNote"></p>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 

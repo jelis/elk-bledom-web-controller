@@ -1,6 +1,7 @@
 /**
  * Color conversions. All functions are pure (no DOM) and tested.
  */
+import { t } from './i18n.js';
 import { clamp } from './util.js';
 
 /** "#rrggbb" → [r, g, b] with 0–255. @param {string} hex */
@@ -64,9 +65,9 @@ export function kelvinToRgb(kelvin) {
 
 /** Colloquial name of a color temperature. @param {number} kelvin */
 export function kelvinName(kelvin) {
-  if (kelvin < 2300) return 'Kerzenlicht';
-  if (kelvin < 3300) return 'Warmweiß';
-  if (kelvin < 4600) return 'Neutralweiß';
-  if (kelvin < 5800) return 'Kaltweiß';
-  return 'Tageslicht';
+  if (kelvin < 2300) return t('kelvin.candle');
+  if (kelvin < 3300) return t('kelvin.warm');
+  if (kelvin < 4600) return t('kelvin.neutral');
+  if (kelvin < 5800) return t('kelvin.cool');
+  return t('kelvin.daylight');
 }

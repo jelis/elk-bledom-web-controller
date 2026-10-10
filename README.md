@@ -7,10 +7,10 @@ A web app (PWA) to control Bluetooth LED light chains with an **ELK-BLEDOM / MEL
 "MELK-OA21 C8" found in cheap string lights. It runs entirely in the browser: no backend, no build step, no account.
 
 Features: on/off, white tones (Kelvin), colors, favorites, brightness, effects, a schedule that switches the light on at
-sunset and off at sunrise, automatic reconnect, and installation to the home screen.
+sunset and off at sunrise, automatic reconnect, home-screen shortcuts, and installation to the home screen.
 
-> The user interface is in German. The strings live in `js/ui/`, `js/config.js` and `index.html`.
-> A German version of this README is in [README.de.md](README.de.md).
+> The interface is available in **English and German** and follows the browser language (anything but German shows
+> English). The texts live in `js/locales/`. A German version of this README is in [README.de.md](README.de.md).
 
 > Not affiliated with any controller vendor or shop. Use at your own risk.
 
@@ -70,6 +70,8 @@ js/
   color.js          Color conversions, Kelvin to RGB (pure)
   state.js          Small observable state (color, Kelvin, effect, power)
   storage.js        localStorage wrapper and all storage keys
+  i18n.js           t(), language detection, translating the static markup
+  locales/          de.js, en.js: all UI texts (same keys in each file)
   util.js
   ui/               One UI module per section of the page
 test/               Unit tests (node:test)
@@ -122,10 +124,18 @@ Static files, any https host works.
 After adding files under `js/`, `css/` or `icons/`, `PRECACHE` in `sw.js` has to match (`npm test` checks this).
 Bump `CACHE_VERSION` after larger changes.
 
+**Add a language:** copy `js/locales/en.js` to `js/locales/xx.js`, translate the values, register it in `js/i18n.js` and
+add both files to `PRECACHE`. `npm test` checks that all languages have the same keys.
+
 ## Install on a phone
 
 - **Android (Chrome):** open the site → menu ⋮ → "Install app"
 - **iPhone:** open the site in **Bluefy** and add it to the home screen
+
+**Shortcuts:** on Android, long-press the installed app icon to get "Licht an" / "Licht aus" (defined in
+`manifest.json`; they open the app with `?action=on` or `?action=off`, and the app switches the light once it is
+connected). On iPhone you can do the same with the Shortcuts app and an "Open URL" action pointing to
+`https://<your-site>/?action=on`. Whether Bluefy hands such a link to the installed app correctly is untested.
 
 Pair in the same place where you will use the app later: an installed app and a normal browser tab remember devices
 separately. The browser's device picker only appears for the first pairing. After that the app connects by itself.

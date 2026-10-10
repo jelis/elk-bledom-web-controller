@@ -5,7 +5,7 @@
  * When adding files to js/ or css/, add them to the PRECACHE list (test/sw.test.js checks this),
  * and bump CACHE_VERSION for larger changes.
  */
-const CACHE_VERSION = 'lichterkette-v3';
+const CACHE_VERSION = 'lichterkette-v4';
 
 const PRECACHE = [
   './',
@@ -16,6 +16,7 @@ const PRECACHE = [
   './js/bluetooth.js',
   './js/color.js',
   './js/config.js',
+  './js/i18n.js',
   './js/protocol.js',
   './js/schedule.js',
   './js/state.js',
@@ -23,6 +24,8 @@ const PRECACHE = [
   './js/sun.js',
   './js/util.js',
   './js/write-queue.js',
+  './js/locales/de.js',
+  './js/locales/en.js',
   './js/ui/colors.js',
   './js/ui/dom.js',
   './js/ui/effects.js',

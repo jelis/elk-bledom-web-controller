@@ -11,10 +11,11 @@ import { SCHEDULE_TOLERANCE_MIN, OFFSET_LIMIT_MIN } from './config.js';
 import { KEYS } from './storage.js';
 import * as protocol from './protocol.js';
 import { sunEventMinutes } from './sun.js';
+import { t } from './i18n.js';
 import { clamp } from './util.js';
 
-export const DAYS_SHORT = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-export const DAYS_LONG = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+/** Day names are translated: `t('day.short.<bit>')` and `t('day.long.<bit>')`, bit 0 = Monday. */
+export const DAY_BITS = [0, 1, 2, 3, 4, 5, 6];
 export const ALL_DAYS = 0b1111111;
 
 const MINUTES_PER_DAY = 1440;
@@ -48,13 +49,15 @@ export function circularDistance(a, b) {
   return Math.min(diff, MINUTES_PER_DAY - diff);
 }
 
-/** "Täglich", "Mo–Fr", "Sa, So" or the individual days. @param {number} days */
+/** "Daily", "Mon–Fri", "Sat, Sun" or the individual days (in the current language). @param {number} days */
 export function daySummary(days) {
   const mask = days & ALL_DAYS;
-  if (mask === ALL_DAYS) return 'Täglich';
-  if (mask === 0b0011111) return 'Mo–Fr';
-  if (mask === 0b1100000) return 'Sa, So';
-  return DAYS_SHORT.filter((_, bit) => mask & (1 << bit)).join(', ');
+  if (mask === ALL_DAYS) return t('schedule.daily');
+  if (mask === 0b0011111) return t('schedule.weekdays');
+  if (mask === 0b1100000) return t('schedule.weekend');
+  return DAY_BITS.filter((bit) => mask & (1 << bit))
+    .map((bit) => t('day.short.' + bit))
+    .join(', ');
 }
 
 /**

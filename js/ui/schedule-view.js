@@ -1,11 +1,14 @@
 /** Schedule cards "Licht an" / "Licht aus". The markup lives in index.html (data-alarm="0|1"). */
 import { $, haptic, toast } from './dom.js';
 import { OFFSET_STEP_MIN } from '../config.js';
-import { ALARM_SLOTS, ALL_DAYS, DAYS_LONG, DAYS_SHORT, daySummary, formatMinutes } from '../schedule.js';
+import { t } from '../i18n.js';
+import { ALARM_SLOTS, ALL_DAYS, DAY_BITS, daySummary, formatMinutes } from '../schedule.js';
 
 const signedMinutes = (offset) => (offset > 0 ? '+' : '−') + Math.abs(offset);
 const offsetText = (offset) =>
-  offset === 0 ? 'genau zur Sonnenzeit' : `${Math.abs(offset)} Min. ${offset < 0 ? 'davor' : 'danach'}`;
+  offset === 0
+    ? t('schedule.offsetNone')
+    : t(offset < 0 ? 'schedule.offsetBefore' : 'schedule.offsetAfter', { min: Math.abs(offset) });
 
 /**
  * @param {object} deps
@@ -24,13 +27,13 @@ export function initScheduleView({ schedule }) {
       dayButtons: [],
     };
 
-    DAYS_SHORT.forEach((name, bit) => {
+    DAY_BITS.forEach((bit) => {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'day-button';
-      button.textContent = name;
+      button.textContent = t('day.short.' + bit);
       button.disabled = true;
-      button.setAttribute('aria-label', DAYS_LONG[bit]);
+      button.setAttribute('aria-label', t('day.long.' + bit));
       button.onclick = () => {
         haptic();
         schedule.toggleDay(slot, bit);
@@ -55,19 +58,19 @@ export function initScheduleView({ schedule }) {
     schedule.alarms.forEach((alarm, slot) => {
       const view = cards[slot];
       const minutes = schedule.minutes(slot);
-      const offsetShort = alarm.offset ? ` ${signedMinutes(alarm.offset)}` : '';
 
       view.enabled.checked = alarm.enabled;
       view.body.hidden = !alarm.enabled;
       view.dayButtons.forEach((button, bit) => button.classList.toggle('on', Boolean(alarm.days & (1 << bit))));
 
       if (!alarm.enabled) {
-        view.summary.textContent = 'Aus';
+        view.summary.textContent = t('schedule.summaryOff');
       } else if (!(alarm.days & ALL_DAYS)) {
-        view.summary.textContent = 'Bitte Tage wählen';
+        view.summary.textContent = t('schedule.pickDays');
       } else {
-        const when = minutes === null ? 'heute keine Sonnenzeit' : `${formatMinutes(minutes)} Uhr`;
-        view.summary.textContent = `${daySummary(alarm.days)} · ${when}${offsetShort && ` (${offsetShort.trim()} Min.)`}`;
+        const when = minutes === null ? t('schedule.noSun') : t('schedule.at', { time: formatMinutes(minutes) });
+        const offset = alarm.offset ? ` (${t('schedule.offsetShort', { value: signedMinutes(alarm.offset) })})` : '';
+        view.summary.textContent = `${daySummary(alarm.days)} · ${when}${offset}`;
       }
 
       view.time.textContent = minutes === null ? '–' : formatMinutes(minutes);
@@ -81,6 +84,6 @@ export function initScheduleView({ schedule }) {
   $('clockNow').onclick = () => {
     haptic();
     schedule.sendClock();
-    toast('Uhr der Kette gestellt');
+    toast(t('schedule.clockSet'));
   };
 }

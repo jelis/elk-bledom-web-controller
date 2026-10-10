@@ -1,4 +1,5 @@
 /** Status line, connection indicator and notice for unsupported browsers. */
+import { t } from '../i18n.js';
 import { isIos } from '../util.js';
 import { $ } from './dom.js';
 
@@ -11,12 +12,12 @@ export function setStatus(text) {
 export function setConnectedUi(connected) {
   $('dot').classList.toggle('on', connected);
   document.body.classList.toggle('connected', connected);
-  // Everything in .lock as well as on/off and "Uhr stellen" is only usable while connected
+  // Everything in .lock as well as on/off and "set clock" is only usable while connected
   document
     .querySelectorAll('.lock :is(button, input), #powerSeg button, #clockNow')
     .forEach((element) => (element.disabled = !connected));
   const button = $('connect');
-  button.textContent = connected ? 'Trennen' : 'Verbinden';
+  button.textContent = t(connected ? 'button.disconnect' : 'button.connect');
   button.classList.toggle('ghost', connected);
 }
 
@@ -30,13 +31,9 @@ function showMessage(html) {
 /** Shows a notice if the browser does not support Web Bluetooth or the page is not served over https. */
 export function showSupportProblem() {
   if (!('bluetooth' in navigator)) {
-    showMessage(
-      isIos()
-        ? '<b>Dieser Browser unterstützt kein Web Bluetooth.</b><br>Auf dem iPhone funktioniert Safari dafür nicht. Öffne diese Seite im kostenlosen Browser <b>Bluefy</b> (App Store).'
-        : '<b>Dieser Browser unterstützt kein Web Bluetooth.</b><br>Nutze Chrome oder Edge (Android / Desktop) und öffne die Seite über <b>https</b>.',
-    );
+    showMessage(t(isIos() ? 'support.noBluetoothIos' : 'support.noBluetooth'));
   } else if (!window.isSecureContext) {
-    showMessage('<b>Web Bluetooth braucht https.</b> Öffne die Seite über die https-Adresse.');
+    showMessage(t('support.needsHttps'));
   } else {
     return false;
   }

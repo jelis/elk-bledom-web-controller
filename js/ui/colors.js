@@ -1,6 +1,7 @@
-/** "Weiß" tab (color temperature) and "Farbe" tab (hue, swatches, custom color). */
+/** "White" tab (color temperature) and "Color" tab (hue, swatches, custom color). */
 import { $, haptic } from './dom.js';
 import { COLOR_PRESETS, KELVIN, WHITE_PRESETS } from '../config.js';
+import { t } from '../i18n.js';
 import { hexToHue, hexToRgb, hsvToHex, kelvinName, kelvinToRgb, rgbToHex } from '../color.js';
 import * as protocol from '../protocol.js';
 import { KEYS } from '../storage.js';
@@ -80,14 +81,14 @@ export function initColors({ chain, state, storage }) {
   }
   kelvinSlider.style.background = `linear-gradient(90deg,${gradientStops.join(',')})`;
 
-  const chips = WHITE_PRESETS.map(({ name, kelvin }) => {
+  const chips = WHITE_PRESETS.map(({ nameKey, kelvin }) => {
     const [r, g, b] = kelvinToRgb(kelvin);
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'chip';
     button.dataset.kelvin = String(kelvin);
     button.disabled = true;
-    button.innerHTML = `<i style="background:rgb(${r},${g},${b})"></i>${name}`;
+    button.innerHTML = `<i style="background:rgb(${r},${g},${b})"></i>${t(nameKey)}`;
     button.onclick = () => {
       haptic();
       applyWhite(kelvin);
@@ -96,14 +97,14 @@ export function initColors({ chain, state, storage }) {
     return button;
   });
 
-  const swatches = COLOR_PRESETS.map(({ hex, name }) => {
+  const swatches = COLOR_PRESETS.map(({ hex, nameKey }) => {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'swatch';
     button.style.background = hex;
     button.dataset.color = hex;
     button.disabled = true;
-    button.setAttribute('aria-label', name);
+    button.setAttribute('aria-label', t(nameKey));
     button.onclick = () => {
       haptic();
       applyColor(hex);

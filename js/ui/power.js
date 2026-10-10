@@ -13,6 +13,7 @@ import { KEYS } from '../storage.js';
 export function initPower({ chain, state, storage }) {
   const orb = $('orb');
 
+  /** @param {boolean} on */
   const setPower = (on) => {
     haptic();
     state.set({ on });
@@ -43,6 +44,7 @@ export function initPower({ chain, state, storage }) {
   state.subscribe(render);
 
   return {
+    setPower,
     /** Loads the saved state (e.g. after connecting). */
     restore() {
       state.set({ on: storage.get(KEYS.power, true) });

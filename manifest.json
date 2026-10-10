@@ -8,6 +8,20 @@
   "orientation": "portrait",
   "background_color": "#000000",
   "theme_color": "#000000",
+  "shortcuts": [
+    {
+      "name": "Licht an",
+      "short_name": "An",
+      "url": "./index.html?action=on",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Licht aus",
+      "short_name": "Aus",
+      "url": "./index.html?action=off",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ],
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },

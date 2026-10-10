@@ -30,6 +30,8 @@ npm install        # nur für Tests, Lint und Formatierung nötig
 npm start          # lokaler Server auf http://localhost:8000 (oder: python3 -m http.server 8000)
 ```
 
+Die Oberfläche gibt es auf **Deutsch und Englisch** und folgt der Browsersprache (alles außer Deutsch zeigt Englisch). Die Texte stehen in `js/locales/`.
+
 Dann in Chrome (Android oder Desktop) `http://localhost:8000` öffnen. Auf dem iPhone funktioniert Safari nicht, dort den
 Browser **Bluefy** nutzen.
 
@@ -55,6 +57,8 @@ js/
   color.js          Farbumrechnungen, Kelvin → RGB (rein)
   state.js          kleiner beobachtbarer Zustand (Farbe, Kelvin, Effekt, An/Aus)
   storage.js        localStorage-Wrapper und alle Schlüssel
+  i18n.js           t(), Spracherkennung, Übersetzung des statischen Markups
+  locales/          de.js, en.js: alle Oberflächentexte (gleiche Schlüssel)
   util.js
   ui/               Oberflächen-Module, je eines pro Bereich der Seite
 test/               Unit-Tests (node:test)
@@ -104,10 +108,18 @@ Statische Dateien, jeder Hoster mit https genügt.
 Nach Änderungen an Dateien in `js/`, `css/` oder `icons/` muss die Liste `PRECACHE` in `sw.js` passen
 (`npm test` prüft das). Bei größeren Änderungen `CACHE_VERSION` erhöhen.
 
+**Sprache hinzufügen:** `js/locales/en.js` nach `js/locales/xx.js` kopieren, Werte übersetzen, in `js/i18n.js`
+registrieren und beide Dateien in `PRECACHE` eintragen. `npm test` prüft, dass alle Sprachen dieselben Schlüssel haben.
+
 ## Installieren
 
 - **Android (Chrome):** Seite öffnen → Menü ⋮ → „App installieren“
 - **iPhone:** Seite in **Bluefy** öffnen und zum Home-Bildschirm hinzufügen
+
+**Kurzbefehle:** Auf Android erscheinen beim langen Drücken des installierten App-Icons „Licht an“ und „Licht aus“
+(in `manifest.json` definiert; sie öffnen die App mit `?action=on` bzw. `?action=off`, und die App schaltet, sobald
+sie verbunden ist). Auf dem iPhone geht das mit der Kurzbefehle-App und der Aktion „URL öffnen“ mit
+`https://<deine-seite>/?action=on`. Ob Bluefy so einen Link richtig an die installierte App übergibt, ist ungeprüft.
 
 Koppeln musst du in der Umgebung, in der du die App danach nutzt: Eine installierte App und ein normaler Browser-Tab
 merken sich Geräte getrennt. Das Auswahlfenster erscheint nur beim ersten Koppeln, danach verbindet sich die App von selbst.

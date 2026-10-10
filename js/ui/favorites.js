@@ -1,6 +1,7 @@
 /** Favorites: saved colors and white tones as quick picks. */
 import { $, haptic, toast } from './dom.js';
 import { MAX_FAVORITES } from '../config.js';
+import { t } from '../i18n.js';
 import { KEYS } from '../storage.js';
 
 /**
@@ -32,13 +33,16 @@ export function initFavorites({ chain, state, storage, colors }) {
       button.style.background = favorite.c;
       button.dataset.color = favorite.c;
       button.disabled = !chain.isConnected;
-      button.setAttribute('aria-label', 'Favorit ' + (favorite.k ? favorite.k + ' Kelvin' : 'Farbe'));
+      button.setAttribute(
+        'aria-label',
+        favorite.k ? t('favorites.itemWhite', { kelvin: favorite.k }) : t('favorites.itemColor'),
+      );
       button.innerHTML = '<span class="x" aria-hidden="true">−</span>';
       button.onclick = () => (editing ? remove(index) : choose(favorite));
       row.appendChild(button);
     });
     row.classList.toggle('editing', editing);
-    $('favEdit').textContent = editing ? 'Fertig' : 'Bearbeiten';
+    $('favEdit').textContent = t(editing ? 'favorites.done' : 'favorites.edit');
     $('favEdit').hidden = !favorites.length;
     $('favHint').hidden = favorites.length > 0;
     renderSelection(state.get());
@@ -70,13 +74,13 @@ export function initFavorites({ chain, state, storage, colors }) {
 
   $('favAdd').onclick = () => {
     const { color, kelvin, effect } = state.get();
-    if (effect !== null) return toast('Effekte lassen sich nicht speichern. Wähle eine Farbe.');
-    if (favorites.some((favorite) => favorite.c === color)) return toast('Ist schon in deinen Favoriten.');
+    if (effect !== null) return toast(t('favorites.noEffects'));
+    if (favorites.some((favorite) => favorite.c === color)) return toast(t('favorites.duplicate'));
     favorites = [{ c: color, k: kelvin }, ...favorites].slice(0, MAX_FAVORITES);
     save();
     haptic();
     render();
-    toast('Als Favorit gespeichert');
+    toast(t('favorites.saved'));
   };
   $('favEdit').onclick = () => {
     editing = !editing;

@@ -30,28 +30,28 @@ export const OFFSET_LIMIT_MIN = 180;
 /** Color temperature slider (Kelvin). */
 export const KELVIN = { min: 2000, max: 6500, step: 50, default: 2700 };
 
-/** Quick picks in the "Weiß" tab. */
+/** Quick picks in the "White" tab. `nameKey` is a key in js/locales. */
 export const WHITE_PRESETS = [
-  { name: 'Kerzenlicht', kelvin: 2000 },
-  { name: 'Warmweiß', kelvin: 2700 },
-  { name: 'Neutralweiß', kelvin: 4000 },
-  { name: 'Tageslicht', kelvin: 6500 },
+  { nameKey: 'kelvin.candle', kelvin: 2000 },
+  { nameKey: 'kelvin.warm', kelvin: 2700 },
+  { nameKey: 'kelvin.neutral', kelvin: 4000 },
+  { nameKey: 'kelvin.daylight', kelvin: 6500 },
 ];
 
-/** Color swatches in the "Farbe" tab. */
+/** Color swatches in the "Color" tab. */
 export const COLOR_PRESETS = [
-  { hex: '#ff0000', name: 'Rot' },
-  { hex: '#ff7a00', name: 'Orange' },
-  { hex: '#ffd000', name: 'Gelb' },
-  { hex: '#00ff40', name: 'Grün' },
-  { hex: '#00e5ff', name: 'Türkis' },
-  { hex: '#0040ff', name: 'Blau' },
-  { hex: '#8a00ff', name: 'Violett' },
-  { hex: '#ff00c8', name: 'Pink' },
-  { hex: '#ffffff', name: 'Weiß' },
-  { hex: '#ffcf8a', name: 'Warmweiß' },
-  { hex: '#ff5a5a', name: 'Hellrot' },
-  { hex: '#7dffb0', name: 'Mint' },
+  { hex: '#ff0000', nameKey: 'color.name.red' },
+  { hex: '#ff7a00', nameKey: 'color.name.orange' },
+  { hex: '#ffd000', nameKey: 'color.name.yellow' },
+  { hex: '#00ff40', nameKey: 'color.name.green' },
+  { hex: '#00e5ff', nameKey: 'color.name.turquoise' },
+  { hex: '#0040ff', nameKey: 'color.name.blue' },
+  { hex: '#8a00ff', nameKey: 'color.name.violet' },
+  { hex: '#ff00c8', nameKey: 'color.name.pink' },
+  { hex: '#ffffff', nameKey: 'color.name.white' },
+  { hex: '#ffcf8a', nameKey: 'kelvin.warm' },
+  { hex: '#ff5a5a', nameKey: 'color.name.lightRed' },
+  { hex: '#7dffb0', nameKey: 'color.name.mint' },
 ];
 
 /** The controller's built-in effects are 0x87 … 0x9C (22 in total). */

@@ -17,7 +17,7 @@ const PACKET_LENGTH = 9;
  */
 function packet(...bytes) {
   if (bytes.length !== PACKET_LENGTH || bytes[0] !== START || bytes[PACKET_LENGTH - 1] !== END) {
-    throw new Error('Ungültiges Paket: ' + bytes.map((b) => b.toString(16)).join(' '));
+    throw new Error('Invalid packet: ' + bytes.map((b) => b.toString(16)).join(' '));
   }
   return Uint8Array.from(bytes);
 }

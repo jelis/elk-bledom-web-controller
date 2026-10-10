@@ -12,6 +12,7 @@
  *   - If the chain is out of range, `watchAdvertisements()` waits for its signal.
  */
 import { BLE, WRITE_INTERVAL_MS } from './config.js';
+import { t } from './i18n.js';
 import { KEYS } from './storage.js';
 import { isIos } from './util.js';
 import { WriteQueue } from './write-queue.js';
@@ -23,14 +24,14 @@ const RECONNECT_DELAY_MS = 1200;
 export function friendlyError(error) {
   switch (error?.name) {
     case 'NotFoundError':
-      return 'Keine Kette gefunden oder ausgewählt. Ist sie an und mit keiner anderen App verbunden?';
+      return t('err.notFound');
     case 'NotAllowedError':
     case 'SecurityError':
-      return 'Bluetooth wurde nicht erlaubt. Bitte in den Einstellungen freigeben.';
+      return t('err.notAllowed');
     case 'NetworkError':
-      return 'Verbindung nicht möglich. Ist die Kette an, in der Nähe und nicht mit einer anderen App verbunden?';
+      return t('err.network');
     default:
-      return 'Das hat nicht geklappt. Bitte versuche es noch einmal.';
+      return t('err.generic');
   }
 }
 
@@ -62,7 +63,7 @@ export class ChainConnection extends EventTarget {
       intervalMs: WRITE_INTERVAL_MS,
       onError: (error) => {
         console.warn('Write error', error);
-        this.#emitStatus('Befehl nicht gesendet. Bitte Verbindung prüfen.');
+        this.#emitStatus(t('ble.writeFailed'));
       },
     });
   }
@@ -89,7 +90,7 @@ export class ChainConnection extends EventTarget {
   async connectWithPicker({ showAllDevices = false } = {}) {
     this.#stopWatching();
     try {
-      this.#emitStatus('Suche Gerät …');
+      this.#emitStatus(t('ble.searching'));
       const device = await navigator.bluetooth.requestDevice(
         showAllDevices || isIos()
           ? { acceptAllDevices: true, optionalServices: [BLE.service] }
@@ -134,7 +135,7 @@ export class ChainConnection extends EventTarget {
     if (!this.#isAutoConnectEnabled()) return;
     if (!navigator.bluetooth) return;
     if (!navigator.bluetooth.getDevices) {
-      this.#emitStatus('Dieser Browser kann nicht automatisch verbinden. Tippe auf „Verbinden“.');
+      this.#emitStatus(t('ble.noAutoConnect'));
       return;
     }
     if (this.isConnected) return;
@@ -145,18 +146,18 @@ export class ChainConnection extends EventTarget {
       try {
         devices = await navigator.bluetooth.getDevices();
       } catch {
-        this.#emitStatus('Tippe auf „Verbinden“.');
+        this.#emitStatus(t('ble.tapConnect'));
         return;
       }
       if (!devices.length) {
-        this.#emitStatus('Noch nicht gekoppelt. Tippe einmal auf „Verbinden“, danach klappt es automatisch.');
+        this.#emitStatus(t('ble.notPaired'));
         return;
       }
 
       const savedId = this.#storage.get(KEYS.deviceId, null);
       const device = devices.find((d) => d.id === savedId) ?? devices[0];
       this.#attach(device);
-      this.#emitStatus('Verbinde automatisch mit ' + (device.name || 'Gerät') + ' …');
+      this.#emitStatus(t('ble.autoConnecting', { name: this.#nameOf(device) }));
 
       try {
         await this.#openGatt();
@@ -165,7 +166,7 @@ export class ChainConnection extends EventTarget {
         /* probably out of range: wait for the chain's signal */
       }
       if (await this.#waitForAdvertisement(device)) return;
-      this.#emitStatus('Kette nicht gefunden. Tippe auf „Verbinden“.');
+      this.#emitStatus(t('ble.notFoundTap'));
     } finally {
       this.#autoConnectBusy = false;
     }
@@ -188,14 +189,14 @@ export class ChainConnection extends EventTarget {
       try {
         await this.#openGatt();
       } catch {
-        this.#emitStatus('Verbinden fehlgeschlagen. Tippe auf „Verbinden“.');
+        this.#emitStatus(t('ble.connectFailed'));
       }
     };
     device.addEventListener('advertisementreceived', onAdvertisement);
 
     try {
       await device.watchAdvertisements({ signal: controller.signal });
-      this.#emitStatus('Warte, bis die Kette in Reichweite ist …');
+      this.#emitStatus(t('ble.waiting'));
       return true;
     } catch {
       device.removeEventListener('advertisementreceived', onAdvertisement);
@@ -223,11 +224,11 @@ export class ChainConnection extends EventTarget {
 
   async #openGatt() {
     const device = this.#device;
-    this.#emitStatus('Verbinde mit ' + (device.name || 'Gerät') + ' …');
+    this.#emitStatus(t('ble.connecting', { name: this.#nameOf(device) }));
     const server = await device.gatt.connect();
     const service = await server.getPrimaryService(BLE.service);
     this.#characteristic = await service.getCharacteristic(BLE.characteristic);
-    this.#emitStatus('Verbunden mit ' + (device.name || 'Gerät'));
+    this.#emitStatus(t('ble.connected', { name: this.#nameOf(device) }));
     this.#emitConnection(true);
   }
 
@@ -236,10 +237,10 @@ export class ChainConnection extends EventTarget {
     this.#emitConnection(false);
     if (this.#expectingDisconnect) {
       this.#expectingDisconnect = false;
-      this.#emitStatus('Getrennt');
+      this.#emitStatus(t('ble.disconnected'));
       return;
     }
-    this.#emitStatus('Verbindung verloren, versuche erneut …');
+    this.#emitStatus(t('ble.lostRetry'));
     for (let attempt = 0; attempt < RECONNECT_ATTEMPTS; attempt++) {
       try {
         await new Promise((resolve) => setTimeout(resolve, RECONNECT_DELAY_MS));
@@ -249,8 +250,12 @@ export class ChainConnection extends EventTarget {
         /* next attempt */
       }
     }
-    this.#emitStatus('Verbindung verloren.');
+    this.#emitStatus(t('ble.lost'));
     this.autoConnect();
+  }
+
+  #nameOf(device) {
+    return device.name || t('ble.defaultName');
   }
 
   #emitStatus(text) {

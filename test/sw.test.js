@@ -28,3 +28,14 @@ test('the icons from manifest.json exist', () => {
   const manifest = JSON.parse(readFileSync(join(root, 'manifest.json'), 'utf8'));
   for (const icon of manifest.icons) assert.ok(existsSync(join(root, icon.src)), icon.src);
 });
+
+test('manifest shortcuts only use the supported actions and existing icons', () => {
+  const manifest = JSON.parse(readFileSync(join(root, 'manifest.json'), 'utf8'));
+  const actions = manifest.shortcuts.map((shortcut) =>
+    new URL(shortcut.url, 'https://example.com/').searchParams.get('action'),
+  );
+  assert.deepEqual(actions, ['on', 'off']);
+  for (const shortcut of manifest.shortcuts) {
+    for (const icon of shortcut.icons) assert.ok(existsSync(join(root, icon.src)), icon.src);
+  }
+});
