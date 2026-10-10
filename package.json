@@ -1,0 +1,32 @@
+{
+  "name": "lichterkette",
+  "version": "1.0.0",
+  "description": "Web-App (PWA) zur Steuerung einer Bluetooth-Lichterkette mit ELK-BLEDOM / MELK Controller",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "npx --yes serve@14 -l 8000 .",
+    "test": "node --import ./test/setup.js --test \"test/*.test.js\"",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "globals": "^15.0.0",
+    "prettier": "^3.3.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ble",
+    "web-bluetooth",
+    "pwa",
+    "led",
+    "elk-bledom",
+    "melk"
+  ]
+}
