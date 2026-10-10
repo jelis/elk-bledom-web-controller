@@ -1,4 +1,5 @@
 /** Status line, connection indicator and notice for unsupported browsers. */
+import { isIos } from '../util.js';
 import { $ } from './dom.js';
 
 /** @param {string} text */
@@ -29,9 +30,8 @@ function showMessage(html) {
 /** Shows a notice if the browser does not support Web Bluetooth or the page is not served over https. */
 export function showSupportProblem() {
   if (!('bluetooth' in navigator)) {
-    const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent);
     showMessage(
-      isIos
+      isIos()
         ? '<b>Dieser Browser unterstützt kein Web Bluetooth.</b><br>Auf dem iPhone funktioniert Safari dafür nicht. Öffne diese Seite im kostenlosen Browser <b>Bluefy</b> (App Store).'
         : '<b>Dieser Browser unterstützt kein Web Bluetooth.</b><br>Nutze Chrome oder Edge (Android / Desktop) und öffne die Seite über <b>https</b>.',
     );

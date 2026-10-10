@@ -1,9 +1,7 @@
 /** Schedule cards "Licht an" / "Licht aus". The markup lives in index.html (data-alarm="0|1"). */
 import { $, haptic, toast } from './dom.js';
-import { LOCATION, OFFSET_STEP_MIN } from '../config.js';
+import { OFFSET_STEP_MIN } from '../config.js';
 import { ALARM_SLOTS, ALL_DAYS, DAYS_LONG, DAYS_SHORT, daySummary, formatMinutes } from '../schedule.js';
-
-const EVENT_LABEL = { sunset: 'Sonnenuntergang', sunrise: 'Sonnenaufgang' };
 
 const signedMinutes = (offset) => (offset > 0 ? '+' : '−') + Math.abs(offset);
 const offsetText = (offset) =>
@@ -23,7 +21,6 @@ export function initScheduleView({ schedule }) {
       summary: part('summary'),
       time: part('time'),
       offset: part('offset'),
-      place: part('place'),
       dayButtons: [],
     };
 
@@ -58,7 +55,6 @@ export function initScheduleView({ schedule }) {
     schedule.alarms.forEach((alarm, slot) => {
       const view = cards[slot];
       const minutes = schedule.minutes(slot);
-      const eventLabel = EVENT_LABEL[ALARM_SLOTS[slot].event];
       const offsetShort = alarm.offset ? ` ${signedMinutes(alarm.offset)}` : '';
 
       view.enabled.checked = alarm.enabled;
@@ -70,14 +66,12 @@ export function initScheduleView({ schedule }) {
       } else if (!(alarm.days & ALL_DAYS)) {
         view.summary.textContent = 'Bitte Tage wählen';
       } else {
-        const offsetLong = offsetShort && `${offsetShort} Min.`;
         const when = minutes === null ? 'heute keine Sonnenzeit' : `${formatMinutes(minutes)} Uhr`;
-        view.summary.textContent = `${daySummary(alarm.days)} · ${eventLabel}${offsetLong} · ${when}`;
+        view.summary.textContent = `${daySummary(alarm.days)} · ${when}${offsetShort && ` (${offsetShort.trim()} Min.)`}`;
       }
 
-      view.time.innerHTML = `${minutes === null ? '–' : formatMinutes(minutes)}<small>${eventLabel}${offsetShort}</small>`;
+      view.time.textContent = minutes === null ? '–' : formatMinutes(minutes);
       view.offset.textContent = offsetText(alarm.offset);
-      view.place.textContent = LOCATION.name + (minutes === null ? ' · heute keine Sonnenzeit' : '');
     });
   }
 

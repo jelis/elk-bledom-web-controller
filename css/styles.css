@@ -731,12 +731,6 @@ details[open] .chev {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
-.alarm-time small {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--label2);
-  margin-left: 10px;
-}
 .alarm-offset {
   display: flex;
   align-items: center;
@@ -761,12 +755,6 @@ details[open] .chev {
   text-align: center;
   font-size: 16px;
   font-weight: 600;
-}
-.alarm-place {
-  margin-top: 10px;
-  font-size: 13px;
-  color: var(--label2);
-  text-align: center;
 }
 .link-button {
   margin: 6px 16px 0;

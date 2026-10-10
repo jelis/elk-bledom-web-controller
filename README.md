@@ -137,8 +137,10 @@ separately. The browser's device picker only appears for the first pairing. Afte
 2. **Power-cycle the chain** (unplug for about 10 seconds) so it advertises again.
 3. **Allow Bluetooth for the browser** (iPhone: Settings → Bluefy → Bluetooth). Do not pair it in the system
    Bluetooth settings; the browser's own picker is used.
-4. Tap **"Kette nicht in der Liste? Alle Geräte zeigen"** below the connect button. It lists every Bluetooth device
-   instead of only known controllers. If your chain shows up there under another name, please open an issue with that name.
+4. On Android/desktop, tap **"Kette nicht in der Liste? Alle Geräte zeigen"** below the connect button. It lists every
+   Bluetooth device instead of only known controllers. If your chain shows up there under another name, please open an issue
+   with that name. (On iPhone with Bluefy the picker always lists all devices, because Bluefy does not show the chain when
+   a name/service filter is used. Look for `MELK-OA21 C8`.)
 
 ## Known limitations
 

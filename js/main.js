@@ -12,6 +12,7 @@ import * as protocol from './protocol.js';
 import { Schedule } from './schedule.js';
 import { lightState } from './state.js';
 import { KEYS, storage } from './storage.js';
+import { isIos } from './util.js';
 import { $ } from './ui/dom.js';
 import { initBrightness } from './ui/slider.js';
 import { initColors } from './ui/colors.js';
@@ -58,6 +59,7 @@ chain.addEventListener('connectionchange', (event) => {
 
 $('connect').addEventListener('click', () => (chain.isConnected ? chain.disconnect() : chain.connectWithPicker()));
 $('connectAll').addEventListener('click', () => chain.connectWithPicker({ showAllDevices: true }));
+$('connectAll').hidden = isIos(); // on iOS the picker already lists all devices
 
 $('auto').checked = storage.get(KEYS.autoConnect, true);
 $('auto').addEventListener('change', (event) => {

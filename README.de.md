@@ -119,8 +119,10 @@ merken sich Geräte getrennt. Das Auswahlfenster erscheint nur beim ersten Koppe
 2. **Kette kurz vom Strom nehmen** (ca. 10 Sekunden), damit sie wieder sichtbar wird.
 3. **Bluetooth für den Browser erlauben** (iPhone: Einstellungen → Bluefy → Bluetooth). Nicht in den
    System-Bluetooth-Einstellungen koppeln, die App nutzt die Geräteliste des Browsers.
-4. Unter „Verbinden“ auf **„Kette nicht in der Liste? Alle Geräte zeigen“** tippen. Das listet alle Bluetooth-Geräte statt
-   nur bekannter Controller. Taucht die Kette dort unter anderem Namen auf, bitte ein Issue mit dem Namen eröffnen.
+4. Auf Android/Desktop unter „Verbinden“ auf **„Kette nicht in der Liste? Alle Geräte zeigen“** tippen. Das listet alle
+   Bluetooth-Geräte statt nur bekannter Controller. Taucht die Kette dort unter anderem Namen auf, bitte ein Issue mit dem
+   Namen eröffnen. (Auf dem iPhone mit Bluefy zeigt die Liste immer alle Geräte, weil Bluefy die Kette mit Filter nicht
+   anzeigt. Such nach `MELK-OA21 C8`.)
 
 ## Bekannte Einschränkungen
 

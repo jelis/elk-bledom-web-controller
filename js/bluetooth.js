@@ -13,6 +13,7 @@
  */
 import { BLE, WRITE_INTERVAL_MS } from './config.js';
 import { KEYS } from './storage.js';
+import { isIos } from './util.js';
 import { WriteQueue } from './write-queue.js';
 
 const RECONNECT_ATTEMPTS = 3;
@@ -82,15 +83,15 @@ export class ChainConnection extends EventTarget {
   /**
    * Opens the picker dialog and connects. Must be called from a user tap.
    * @param {object} [options]
-   * @param {boolean} [options.showAllDevices] list every Bluetooth device instead of only known controllers
-   *   (diagnostic fallback if the chain does not show up with the normal name/service filter)
+   * @param {boolean} [options.showAllDevices] list every Bluetooth device instead of only known controllers.
+   *   Always on for iOS: Bluefy does not list the chain when a name/service filter is used.
    */
   async connectWithPicker({ showAllDevices = false } = {}) {
     this.#stopWatching();
     try {
       this.#emitStatus('Suche Gerät …');
       const device = await navigator.bluetooth.requestDevice(
-        showAllDevices
+        showAllDevices || isIos()
           ? { acceptAllDevices: true, optionalServices: [BLE.service] }
           : {
               filters: [...BLE.namePrefixes.map((namePrefix) => ({ namePrefix })), { services: [BLE.service] }],
