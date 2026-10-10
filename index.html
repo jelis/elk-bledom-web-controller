@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1020">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lichter">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<title>Lichterkette</title>
+<style>
+  :root{
+    --bg:#0f1020; --card:#191a30; --card2:#222442; --text:#f2f3ff; --muted:#9a9cc0;
+    --accent:#ffb347; --ok:#4cd98a; --bad:#ff6b6b;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  body{padding:max(16px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom));
+    max-width:520px;margin:0 auto}
+  h1{font-size:22px;margin:8px 0 14px;display:flex;align-items:center;gap:10px}
+  .dot{width:12px;height:12px;border-radius:50%;background:var(--bad);display:inline-block}
+  .dot.on{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+  .card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:14px}
+  .card h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 12px;font-weight:600}
+  button{font:inherit;color:var(--text);background:var(--card2);border:0;border-radius:14px;
+    padding:14px 16px;cursor:pointer;touch-action:manipulation}
+  button:active{transform:scale(.97)}
+  button.primary{background:var(--accent);color:#1b1200;font-weight:700;width:100%;font-size:17px}
+  button:disabled{opacity:.4}
+  .row{display:flex;gap:10px}
+  .row>button{flex:1}
+  .status{font-size:14px;color:var(--muted);margin:8px 2px 0;min-height:1.3em}
+  .msg{background:#3a1f26;color:#ffc9c9;border-radius:12px;padding:12px;margin-bottom:14px;font-size:14px;line-height:1.4;display:none}
+  .msg.show{display:block}
+  .msg b{color:#fff}
+  .swatches{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:14px}
+  .sw{aspect-ratio:1;border-radius:50%;border:2px solid rgba(255,255,255,.15);padding:0}
+  .colorwrap{display:flex;align-items:center;gap:14px}
+  input[type=color]{width:84px;height:84px;border:0;background:none;padding:0;border-radius:50%;overflow:hidden}
+  input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+  input[type=color]::-webkit-color-swatch{border:0;border-radius:50%}
+  input[type=color]::-moz-color-swatch{border:0;border-radius:50%}
+  .hint{font-size:13px;color:var(--muted);line-height:1.4}
+  label.sl{display:block;font-size:14px;margin:4px 0 6px;color:var(--muted)}
+  input[type=range]{width:100%;accent-color:var(--accent);height:32px}
+  .modes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .modes button{padding:12px 6px;font-size:14px}
+  .modes button.active{outline:2px solid var(--accent)}
+  .hue{height:34px;border-radius:17px;width:100%;appearance:none;-webkit-appearance:none;
+    background:linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00);outline:none}
+  .hue::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:34px;border-radius:50%;background:#fff;border:3px solid #222;box-shadow:0 1px 6px #0008}
+  .hue::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:#fff;border:3px solid #222}
+</style>
+</head>
+<body>
+  <h1><span id="dot" class="dot"></span> Lichterkette</h1>
+
+  <div id="msg" class="msg"></div>
+
+  <div class="card">
+    <button id="connect" class="primary">Verbinden</button>
+    <div id="status" class="status">Nicht verbunden</div>
+  </div>
+
+  <div class="card">
+    <h2>Power</h2>
+    <div class="row">
+      <button id="on" disabled>An</button>
+      <button id="off" disabled>Aus</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Farbe</h2>
+    <div class="colorwrap">
+      <input type="color" id="color" value="#ff0000" disabled>
+      <div class="hint">Tippen für Farbwähler. Oder unten den Regler / eine Vorlage nutzen.</div>
+    </div>
+    <div style="margin-top:14px">
+      <input type="range" id="hue" class="hue" min="0" max="360" value="0" disabled>
+    </div>
+    <div class="swatches" id="swatches"></div>
+  </div>
+
+  <div class="card">
+    <h2>Helligkeit</h2>
+    <input type="range" id="bright" min="0" max="100" value="100" disabled>
+  </div>
+
+  <div class="card">
+    <h2>Modi</h2>
+    <div class="modes" id="modes"></div>
+    <label class="sl" style="margin-top:14px">Geschwindigkeit</label>
+    <input type="range" id="speed" min="0" max="100" value="50" disabled>
+    <div class="hint" style="margin-top:6px">Die Modi sind nummeriert, weil die Namen je nach Controller-Variante abweichen können.</div>
+  </div>
+
+<script>
+(() => {
+  const SERVICE = '0000fff0-0000-1000-8000-00805f9b34fb';
+  const CHAR    = '0000fff3-0000-1000-8000-00805f9b34fb';
+
+  const $ = id => document.getElementById(id);
+  const dot = $('dot'), statusEl = $('status'), msgEl = $('msg');
+  const controls = ['on','off','color','hue','bright','speed'].map($);
+
+  let device = null, characteristic = null;
+  let queue = Promise.resolve();
+  let lastSend = 0;
+
+  // ---------- Hilfsfunktionen ----------
+  function showMsg(html){ msgEl.innerHTML = html; msgEl.classList.add('show'); }
+  function setStatus(t){ statusEl.textContent = t; }
+  function setConnected(on){
+    dot.classList.toggle('on', on);
+    controls.forEach(c => c.disabled = !on);
+    document.querySelectorAll('#modes button, #swatches button').forEach(b => b.disabled = !on);
+    $('connect').textContent = on ? 'Trennen' : 'Verbinden';
+  }
+  const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+  const hexToRgb = h => [1,3,5].map(i => parseInt(h.slice(i,i+2),16));
+  function hsvToHex(h,s,v){
+    const f = n => { const k=(n+h/60)%6; return v - v*s*Math.max(0,Math.min(k,4-k,1)); };
+    return '#' + [f(5),f(3),f(1)].map(x => Math.round(x*255).toString(16).padStart(2,'0')).join('');
+  }
+
+  // ---------- Protokoll (ELK-BLEDOM / MELK) ----------
+  const frame = (a,b,c,d,e) => new Uint8Array([0x7E,0x00,a,b,c,d,e,0x00,0xEF]);
+  const cmd = {
+    on:   () => new Uint8Array([0x7E,0x00,0x04,0xF0,0x00,0x01,0xFF,0x00,0xEF]),
+    off:  () => new Uint8Array([0x7E,0x00,0x04,0x00,0x00,0x00,0xFF,0x00,0xEF]),
+    color:(r,g,b) => new Uint8Array([0x7E,0x00,0x05,0x03,r,g,b,0x00,0xEF]),
+    bright:p => new Uint8Array([0x7E,0x00,0x01,clamp(p,0,100),0x00,0x00,0x00,0x00,0xEF]),
+    speed: p => new Uint8Array([0x7E,0x00,0x02,clamp(p,0,100),0x00,0x00,0x00,0x00,0xEF]),
+    mode:  m => new Uint8Array([0x7E,0x00,0x03,m,0x03,0x00,0x00,0x00,0xEF]),
+  };
+
+  // Schreiben mit kleiner Pause zwischen Paketen, damit der Controller nichts verschluckt
+  function send(bytes){
+    queue = queue.then(async () => {
+      if (!characteristic) return;
+      const wait = 40 - (Date.now() - lastSend);
+      if (wait > 0) await new Promise(r => setTimeout(r, wait));
+      try {
+        if (characteristic.writeValueWithoutResponse) await characteristic.writeValueWithoutResponse(bytes);
+        else await characteristic.writeValue(bytes);
+      } catch (e) {
+        console.warn('Schreibfehler', e);
+        setStatus('Senden fehlgeschlagen: ' + (e.message || e));
+      }
+      lastSend = Date.now();
+    });
+    return queue;
+  }
+
+  // ---------- Verbindung ----------
+  async function connect(){
+    try {
+      setStatus('Suche Gerät …');
+      device = await navigator.bluetooth.requestDevice({
+        filters: [
+          { namePrefix: 'MELK' },
+          { namePrefix: 'ELK' },
+          { namePrefix: 'LEDBLE' },
+          { namePrefix: 'Triones' },
+          { services: [SERVICE] },
+        ],
+        optionalServices: [SERVICE],
+      });
+      device.addEventListener('gattserverdisconnected', onDisconnected);
+      await openGatt();
+    } catch (e) {
+      if (e.name === 'NotFoundError') setStatus('Abgebrochen');
+      else setStatus('Fehler: ' + (e.message || e));
+      setConnected(false);
+    }
+  }
+
+  async function openGatt(){
+    setStatus('Verbinde mit ' + (device.name || 'Gerät') + ' …');
+    const server  = await device.gatt.connect();
+    const service = await server.getPrimaryService(SERVICE);
+    characteristic = await service.getCharacteristic(CHAR);
+    setConnected(true);
+    setStatus('Verbunden mit ' + (device.name || 'Gerät'));
+    restoreState();
+  }
+
+  let manualDisconnect = false;
+  async function onDisconnected(){
+    characteristic = null;
+    setConnected(false);
+    if (manualDisconnect) { manualDisconnect = false; setStatus('Getrennt'); return; }
+    setStatus('Verbindung verloren, versuche erneut …');
+    for (let i = 0; i < 3; i++) {
+      try { await new Promise(r => setTimeout(r, 1200)); await openGatt(); return; }
+      catch (e) { /* nächster Versuch */ }
+    }
+    setStatus('Verbindung verloren. Tippe auf „Verbinden“.');
+  }
+
+  $('connect').addEventListener('click', () => {
+    if (device && device.gatt.connected) { manualDisconnect = true; device.gatt.disconnect(); }
+    else connect();
+  });
+
+  // ---------- Zustand merken ----------
+  const store = {
+    get(k, d){ try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch(e){ return d; } },
+    set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+  };
+  function restoreState(){
+    $('color').value = store.get('color', '#ff0000');
+    $('bright').value = store.get('bright', 100);
+    $('speed').value = store.get('speed', 50);
+  }
+
+  // ---------- UI ----------
+  $('on').onclick  = () => send(cmd.on());
+  $('off').onclick = () => send(cmd.off());
+
+  function applyColor(hex){
+    $('color').value = hex;
+    store.set('color', hex);
+    const [r,g,b] = hexToRgb(hex);
+    send(cmd.color(r,g,b));
+    document.querySelectorAll('#modes button').forEach(b => b.classList.remove('active'));
+  }
+  $('color').addEventListener('input', e => applyColor(e.target.value));
+  $('hue').addEventListener('input', e => applyColor(hsvToHex(+e.target.value, 1, 1)));
+
+  const presets = ['#ff0000','#ff7a00','#ffd000','#00ff40','#00e5ff','#0040ff',
+                   '#8a00ff','#ff00c8','#ffffff','#ffcf8a','#ff5a5a','#7dffb0'];
+  presets.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'sw'; b.style.background = c; b.disabled = true;
+    b.setAttribute('aria-label', 'Farbe ' + c);
+    b.onclick = () => applyColor(c);
+    $('swatches').appendChild(b);
+  });
+
+  $('bright').addEventListener('input', e => { store.set('bright', +e.target.value); send(cmd.bright(+e.target.value)); });
+  $('speed').addEventListener('input',  e => { store.set('speed',  +e.target.value); send(cmd.speed(+e.target.value)); });
+
+  // Modi: bei ELK-BLEDOM liegen die eingebauten Effekte bei 0x80 .. 0x9C
+  for (let i = 0; i < 29; i++) {
+    const code = 0x80 + i;
+    const b = document.createElement('button');
+    b.textContent = 'Modus ' + (i + 1); b.disabled = true;
+    b.onclick = () => {
+      send(cmd.mode(code));
+      document.querySelectorAll('#modes button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+    };
+    $('modes').appendChild(b);
+  }
+
+  // ---------- Browser-Support ----------
+  if (!('bluetooth' in navigator)) {
+    const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    showMsg(ios
+      ? '<b>Dieser Browser unterstützt kein Web Bluetooth.</b><br>Auf dem iPhone funktioniert Safari dafür nicht. Öffne diese Seite im kostenlosen Browser <b>Bluefy</b> (App Store).'
+      : '<b>Dieser Browser unterstützt kein Web Bluetooth.</b><br>Nutze Chrome oder Edge (Android / Desktop) und stelle sicher, dass die Seite über <b>https</b> geöffnet ist.');
+    $('connect').disabled = true;
+  } else if (!window.isSecureContext) {
+    showMsg('<b>Web Bluetooth braucht https.</b> Öffne die Seite über die https-Adresse.');
+    $('connect').disabled = true;
+  }
+
+  setConnected(false);
+  restoreState();
+
+  // ---------- Service Worker (Offline / Installierbar) ----------
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+})();
+</script>
+</body>
+</html>
